@@ -14,7 +14,7 @@ headless=true
 ## trace or debug for Development or Testing
 ## info for Normal Usage
 ## warn or error for Production/CI/CD Runs
-logLevel=silent
+logLevel=warn
 
 # Input generate Allure Report with True or False
 generateAllureReport=true
