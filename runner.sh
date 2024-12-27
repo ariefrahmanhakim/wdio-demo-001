@@ -19,9 +19,11 @@ logLevel=silent
 # Input generate Allure Report with True or False
 generateAllureReport=true
 
-# Input automatically open Allure Report with True of False
+# Input automatically open Allure Report with True or False
 autoOpenReport=false
 
+# Input multiple instance with True or False
+multipleInstance=true
 
 
 
@@ -31,6 +33,13 @@ autoOpenReport=false
 
 ## Transform the tags for WebDriverIO to match the required format
 tagsRun=$(echo "$tags" | sed 's/\*/ and /g' | sed 's/,/ or /g' | sed 's/#/ not /g')
+
+## Set Instance Single or Multiple
+if [ "$multipleInstance" == "true" ]; then
+  export MAX_INSTANCES=10
+else
+  export MAX_INSTANCES=1
+fi
 
 # Remove allure results
 if [[ "$OSTYPE" == "darwin"* || "$OSTYPE" == "linux-gnu"* ]]; then
