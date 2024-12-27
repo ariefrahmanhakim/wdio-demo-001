@@ -23,7 +23,7 @@ export const config: WebdriverIO.Config = {
     // Specify Test Files
     // ==================
     specs: [
-        './src/test/resource/**/*.feature'
+        './src/test/resources/**/*.feature'
     ],
     exclude: [
         // 'path/to/excluded/files'

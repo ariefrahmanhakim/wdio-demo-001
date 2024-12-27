@@ -5,7 +5,13 @@ browser=chrome
 
 # Input tags with tag on feature file #
 ## Use * for AND, , for OR, # for NOT
-tags=@tag1
+tags=@root-tag-1,@root-tag-2
+
+# Input environment with local | staging | production #
+environment=local
+
+# Input environment with en | id | ru #
+translation=en
 
 # Input headless with true or false #
 headless=true
@@ -14,7 +20,7 @@ headless=true
 ## trace or debug for Development or Testing
 ## info for Normal Usage
 ## warn or error for Production/CI/CD Runs
-logLevel=warn
+logLevel=silent
 
 # Input generate Allure Report with True or False
 generateAllureReport=true
@@ -33,6 +39,12 @@ multipleInstance=true
 
 ## Transform the tags for WebDriverIO to match the required format
 tagsRun=$(echo "$tags" | sed 's/\*/ and /g' | sed 's/,/ or /g' | sed 's/#/ not /g')
+
+## Set Environment Properties
+export ENV=$environment
+
+## Set Translation
+export TRANS=$translation
 
 ## Set Instance Single or Multiple
 if [ "$multipleInstance" == "true" ]; then

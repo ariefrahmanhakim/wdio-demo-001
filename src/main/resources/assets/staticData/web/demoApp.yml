@@ -1,0 +1,6 @@
+username:
+  local: !!str tomsmith
+  staging: "tomsmith"
+username_wrong:
+  local: !!str barfoo
+  staging: "barfoo"

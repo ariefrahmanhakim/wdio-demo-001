@@ -1,0 +1,7 @@
+toast_login_success_text:
+  en: "You logged into a secure area!"
+  id: !!str Anda masuk ke area aman!
+
+toast_login_failed_text:
+  en: !!str Your username is invalid!
+  id: "Nama pengguna Anda tidak valid!"
