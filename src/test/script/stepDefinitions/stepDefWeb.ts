@@ -32,7 +32,7 @@ When(/^(.*) User click (.*)$/, async (path: string, locator: string) => {
 });
 
 Then(
-    /^(.*) Verify (text|contains text|translation) (data|translation) (.*) will (be|not) displayed$/,
+    /^(.*) Verify (text|contains text) (data|translation) (.*) will (be|not) displayed$/,
     async (path: string, typeText: string, type: string, data: string, typeVerify: string) => {
         let selector: string;
         let theData: string | undefined;
