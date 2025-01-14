@@ -5,7 +5,7 @@ browser=chrome
 
 # Input tags with tag on feature file #
 ## Use * for AND, , for OR, # for NOT
-tags=@root-tag-1,@root-tag-2
+tags=@WDIO-1*@api,@WDIO-2*@api,@WDIO-3*@api
 
 # Input environment with local | staging | production #
 environment=local
@@ -29,7 +29,7 @@ generateAllureReport=true
 autoOpenReport=false
 
 # Input multiple instance with True or False
-multipleInstance=true
+multipleInstance=false
 
 
 

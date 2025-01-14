@@ -1,8 +1,8 @@
 @root-tag-2
 Feature: The Internet Guinea Pig Website
 
-  @tag-3 @web
-  Scenario: As a user, I can log into the secure area
+  @WDIO-5 @web
+  Scenario: WDIO-5>>As a user, I can log into the secure area
     Given User go to demo_web apps
     When demoApp/loginPage User fill username with data tomsmith
     And demoApp/loginpage User fill password with data SuperSecretPassword!
@@ -10,8 +10,8 @@ Feature: The Internet Guinea Pig Website
     Then demoApp Verify contains text data You logged into a secure area! will be displayed
     And demoApp Verify contains text data Your username is invalid! will not displayed
 
-  @tag-4 @web
-  Scenario: As a user, I can't log into the secure area
+  @WDIO-6 @web
+  Scenario: WDIO-6>>As a user, I can't log into the secure area
     Given User go to demo_web apps
     When demoApp/loginPage User fill username with data foobar
     And demoApp/loginpage User fill password with data berfoo
@@ -19,8 +19,8 @@ Feature: The Internet Guinea Pig Website
     Then demoApp Verify contains text data You logged into a secure area! will not displayed
     And demoApp Verify contains text data Your username is invalid! will be displayed
 
-  @tag-5 @web
-  Scenario Outline: As a user, I can't log into the secure area
+  @WDIO-7 @web
+  Scenario Outline: WDIO-7>>As a user, I can't log into the secure area
     Given User go to demo_web apps
     When demoApp/loginPage User fill username with staticData <username>
     And demoApp/loginpage User fill password with properties <password>

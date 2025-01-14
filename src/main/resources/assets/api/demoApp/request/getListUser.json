@@ -1,0 +1,11 @@
+{
+    "service": "demo_api",
+    "endpoint": "/api/users",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "queryParam": {
+        "page": 2
+    },
+    "body": null
+}

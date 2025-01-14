@@ -1,3 +1,5 @@
+import { sessionVariable } from './src/test/script/mappers/mapperUtils';
+import chalk from 'chalk';
 import allureReporter from '@wdio/allure-reporter';
 import * as os from "os";
 import fs from 'fs';
@@ -145,8 +147,16 @@ export const config: WebdriverIO.Config = {
         fs.writeFileSync(resultsFilePath, JSON.stringify(globalResults));
     },
 
+    beforeScenario: async function (world: any) {
+        sessionVariable.set('scenarioName', world.pickle.name);
+        console.log(chalk.bold(`Scenario: `+sessionVariable.get('scenarioName')));
+    },
+
     afterStep: async function (step, scenario, result) {
-        if (!result.passed) {
+        if (result.passed) {
+            console.log(chalk.green(`Step: ${step.text}`));
+        } else {
+            console.log(chalk.red(`Step: ${step.text}`));
             await browser.takeScreenshot();
         }
     },
@@ -154,7 +164,7 @@ export const config: WebdriverIO.Config = {
     afterScenario: function (world: any, result: any) {
         const scenarioName = world.pickle.name;
         const status = result.passed ? 'PASSED' : 'FAILED';
-        console.log(`Scenario "${scenarioName}" ${status}`);
+        // console.log(`Scenario "${scenarioName}" ${status}`);
 
         // To handle scenario outline on Allure Report
         allureReporter.addArgument('timestamp', Date.now().toString());
