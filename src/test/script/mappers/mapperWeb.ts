@@ -117,7 +117,7 @@ export default class mapperWeb {
 
         const TRANS = process.env.TRANS || 'en';
 
-        const filePath = `src/main/resources/assets/translation/${frontPath}.yml`;
+        const filePath = `src/main/resources/assets/translation/web/${frontPath}.yml`;
 
         // Load YAML file and parse its content
         const fileContent = fs.readFileSync(filePath, 'utf8');

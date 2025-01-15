@@ -4,8 +4,9 @@
   "headers": {
     "Accept": "application/json"
   },
-  "queryParam": {
-    "page": 2
-  },
-  "body": null
+  "queryParam": null,
+  "body": {
+    "name": "morpheus",
+    "job": "leader"
+  }
 }

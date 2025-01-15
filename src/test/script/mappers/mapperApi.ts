@@ -67,4 +67,64 @@ export class mapperApi {
 
         return result;
     }
+
+    static async getStaticData(dataValue: string): Promise<any> {
+        const pathSegments = dataValue.split(".");
+        const ENV = process.env.ENV || "local";
+
+        const filePath = path.resolve(
+            'src/main/resources/assets/staticData/api',
+            `${pathSegments[0]}.yml`
+        );
+
+        try {
+            const fileContent = await fs.readFile(filePath, 'utf8');
+            const data = yaml.load(fileContent) as Record<string, any>;
+            const theKeys = data[pathSegments[1]];
+
+            if (!theKeys) {
+                throw new Error(`Key "${pathSegments[1]}" not found in YAML: ${filePath}`);
+            }
+
+            const staticDataValue = theKeys[ENV];
+
+            if (!staticDataValue) {
+                throw new Error(`No value found for environment "${ENV}" in key "${pathSegments[1]}".`);
+            }
+
+            return staticDataValue;
+        } catch (error) {
+            throw new Error(`Error reading static data: ${error.message}`);
+        }
+    }
+
+    static async getTranslation(dataValue: string): Promise<any> {
+        const pathSegments = dataValue.split(".");
+        const ENV = process.env.TRANS || "en";
+
+        const filePath = path.resolve(
+            'src/main/resources/assets/translation/api',
+            `${pathSegments[0]}.yml`
+        );
+
+        try {
+            const fileContent = await fs.readFile(filePath, 'utf8');
+            const data = yaml.load(fileContent) as Record<string, any>;
+            const translationKeys = data[pathSegments[1]];
+
+            if (!translationKeys) {
+                throw new Error(`Key "${pathSegments[1]}" not found in YAML: ${filePath}`);
+            }
+
+            const translationValue = translationKeys[ENV];
+
+            if (!translationValue) {
+                throw new Error(`No translation found for environment "${ENV}" in key "${pathSegments[1]}".`);
+            }
+
+            return translationValue;
+        } catch (error) {
+            throw new Error(`Error reading translation: ${error.message}`);
+        }
+    }
 }

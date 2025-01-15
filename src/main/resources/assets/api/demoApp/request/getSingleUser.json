@@ -4,8 +4,6 @@
   "headers": {
     "Accept": "application/json"
   },
-  "queryParam": {
-    "page": 2
-  },
+  "queryParam": {},
   "body": null
 }

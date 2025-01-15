@@ -1,8 +1,9 @@
 import * as path from 'path';
-import * as fs from 'fs'; 
+import * as fs from 'fs';
 import { mapperApi } from '../mappers/mapperApi';
 import helperApiGet from '../helperApi/helperApiGet';
 import axios, { AxiosResponse } from 'axios';
+import helperApiPost from './helperApiPost';
 
 export default class helperApi {
 
@@ -32,12 +33,16 @@ export default class helperApi {
 
         const dataPath = path.join(process.cwd(), parentFolder);
         const fullPath = await mapperApi.fullPathByName(dataPath, fileName);
-        
+
         return fullPath;
     }
 
 
     public static objectToMap(obj: any): Map<string, any> {
+        if (obj == null) {
+            return obj;
+        }
+
         const map = new Map<string, any>();
 
         try {
@@ -64,20 +69,32 @@ export default class helperApi {
             return input;
         }
 
-        const str = input.toString().trim();
+        if (typeof input === 'string') {
+            const str = input.trim();
 
-        if (str.startsWith('{')) {
-            return this.jsonStringToJsonObject(str);
-        } else if (str.startsWith('[')) {
-            return this.jsonStringToJsonArray(str);
+            if (str.startsWith('{')) {
+                return this.jsonStringToJsonObject(str);
+            } else if (str.startsWith('[')) {
+                return this.jsonStringToJsonArray(str);
+            } else {
+                throw new Error('Unknown string format. Input must be a valid JSON object or array.');
+            }
+        } else if (typeof input === 'object') {
+            // If the input is already an object, return it directly
+            return input;
         } else {
-            throw new Error('Unknown string format. Input must be a valid JSON object or array.');
+            throw new Error('Input must be a valid JSON object or array, or a string representing one.');
         }
     }
 
     public static jsonStringToJsonObject(jsonString: string): object {
         try {
-            return JSON.parse(jsonString);
+            const parsed = JSON.parse(jsonString);
+            if (typeof parsed === 'object' && parsed !== null) {
+                return parsed;
+            } else {
+                throw new Error('Provided string is not a JSON object');
+            }
         } catch (error) {
             console.error('Error parsing JSON object:', error);
             throw new Error('Invalid JSON object format');
@@ -103,15 +120,59 @@ export default class helperApi {
         let resp: any;
 
         switch (method.toLowerCase()) {
-            case "get":
+            case 'get':
                 resp = await helperApiGet.requestGet(url, headers);
                 break;
+
+            case 'getparam':
+                resp = await helperApiGet.requestGetParam(url, headers, param);
+                break;
+
+            case 'post':
+                resp = await helperApiPost.requestPost(url, headers, body);
+                break;
+
             default:
-                throw new Error("Method not found");    
+                throw new Error("Method not found");
         }
 
         return resp;
 
     }
-    
+
+    static async getDataSource(value: string): Promise<any> {
+        let theData: any;
+
+        if (value.includes('{') && value.includes('}')) {
+            const insideCurlyStr = value.substring(value.indexOf("{") + 1, value.indexOf("}"));
+            const split = insideCurlyStr.split("-");
+            // console.log(insideCurlyStr);
+            // console.log(split[0]);
+            // console.log(split[1]);
+
+            switch (split[0]) {
+                case "data":
+                    theData = split[1];
+                    break;
+
+                case "properties":
+                    theData = mapperApi.getProperties(split[1]);
+                    break;
+
+                case "staticData":
+                    theData = mapperApi.getStaticData(split[1]);
+                    break;
+
+                case "translation":
+                    theData = mapperApi.getTranslation(split[1]);
+                    break;
+
+                default:
+                    throw new Error(`Invalid type get data source: ${split[0]}`);
+            }
+            return theData;
+        }
+        return value;
+    }
+
 }
