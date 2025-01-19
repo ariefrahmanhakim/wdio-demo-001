@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# Input browser with chrome | firefox | safari | edge #
+# Input browser with chrome | firefox | safari | MicrosoftEdge #
 browser=chrome
 
 # Input tags with tag on feature file #
-## Use * for AND, , for OR, # for NOT
-tags=@WDIO-1*@api,@WDIO-2*@api,@WDIO-3*@api
+tags=@root-tag-1-api
 
 # Input environment with local | staging | production #
 environment=local
@@ -31,8 +30,6 @@ autoOpenReport=false
 # Input multiple instance with True or False
 multipleInstance=false
 
-
-
 #############################################################################
 ####################### Please Don't Change #################################
 #############################################################################
@@ -47,54 +44,99 @@ export ENV=$environment
 export TRANS=$translation
 
 ## Set Instance Single or Multiple
-if [ "$multipleInstance" == "true" ]; then
+if [ "$multipleInstance" = "true" ]; then
   export MAX_INSTANCES=10
 else
   export MAX_INSTANCES=1
 fi
 
+# Detect OS
+os_type=$(uname -s)
+
+case "$os_type" in
+"Darwin")
+  OS_TYPE="macOS"
+  ;;
+"Linux")
+  OS_TYPE="Linux"
+  ;;
+*MINGW* | "CYGWIN" | "MINGW" | "MSYS")
+  OS_TYPE="Windows"
+  ;;
+"WSL")
+  OS_TYPE="Windows (WSL)"
+  ;;
+*)
+  OS_TYPE="Unknown"
+  ;;
+esac
+
+echo "Your Operating System: $(uname -s) -> $OS_TYPE"
+
 # Remove allure results
-if [[ "$OSTYPE" == "darwin"* || "$OSTYPE" == "linux-gnu"* ]]; then
-    rm -rf ./allure-results/*
-    rm -rf ./allure-report/*
-else
-    # For Windows
-    if command -v del &> /dev/null; then
-        del /s /q .\\allure-results\\*
-        del /s /q .\\allure-report\\*
-    fi
-fi
+case "$OS_TYPE" in
+"Linux" | "macOS")
+  rm -rf ./allure-results/* ./allure-report/*
+  ;;
+"Windows" | "Windows (WSL)")
+  powershell.exe -Command "Remove-Item -Recurse -Force .\\allure-results\\*"
+  powershell.exe -Command "Remove-Item -Recurse -Force .\\allure-report\\*"
+  ;;
+*)
+  echo "Unknown OS, cannot continue."
+  exit 1
+  ;;
+esac
 
 # Execute the WebDriverIO test runner with the tag expression
 GENERATE_ALLURE_REPORT=$generateAllureReport BROWSER=$browser HEADLESS=$headless LOG="$logLevel" npx wdio run ./wdio.conf.ts --cucumberOpts.tagExpression="$tagsRun"
 
 # Generate the Allure report
-if [ "$generateAllureReport" == "true" ]; then
-    echo "Generating Allure report..."
-    # Generate the Allure report
-    allure generate --single-file ./allure-results --clean -o ./allure-report
+if [ "$generateAllureReport" = "true" ]; then
+  echo "Generating Allure report..."
+  allure generate --single-file ./allure-results --clean -o ./allure-report
 
-    # Prepare the file:// URL to the Allure report
-    if [[ "$OSTYPE" == "darwin"* || "$OSTYPE" == "linux-gnu"* ]]; then
-        # Unix-like systems
-        report_url="file://$(pwd)/allure-report/index.html"
+  # Build dynamic file URL for Allure report
+  case "$OS_TYPE" in
+  "Linux" | "macOS")
+    report_url="file://$(pwd)/allure-report/index.html"
+    ;;
+  "Windows (WSL)")
+    report_url="file://$(wslpath -w $(pwd))/allure-report/index.html"
+    ;;
+  "Windows")
+    if [[ "$SHELL" == *"bash"* ]]; then
+      report_url="file:///$(pwd | sed 's|^/c/|C:/|g' | sed 's|/|\\|g')\\allure-report\\index.html"
     else
-        # Windows
-        report_url="file://$(pwd -W)/allure-report/index.html"
+      report_url="file:///$(echo $(pwd) | sed 's|/|\\|g' | sed 's|^C:|C:|')\\allure-report\\index.html"
     fi
+    ;;
+  *)
+    echo "Unknown OS, cannot determine report URL"
+    exit 1
+    ;;
+  esac
 
-    echo "Report URL: $report_url"
+  echo "Report URL: $report_url"
 
-if [ "$autoOpenReport" == "true" ]; then
-        # Open the Allure report file in the default browser
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-            open "$report_url"
-        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            xdg-open "$report_url"
-        elif [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-            start "$report_url"
-        else
-            echo "Unknown OS, please manually open the report at $report_url"
-        fi
-    fi 
+  # Automatically open the report if enabled
+  if [ "$autoOpenReport" = "true" ]; then
+    case "$OS_TYPE" in
+    "Linux")
+      xdg-open "$report_url"
+      ;;
+    "macOS")
+      open "$report_url"
+      ;;
+    "Windows (WSL)")
+      explorer.exe "$(wslpath -w $(pwd))\\allure-report\\index.html"
+      ;;
+    "Windows")
+      start "$report_url"
+      ;;
+    *)
+      echo "Cannot open the report automatically. Please open it manually at $report_url"
+      ;;
+    esac
+  fi
 fi

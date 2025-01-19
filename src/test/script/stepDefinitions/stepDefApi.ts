@@ -42,7 +42,7 @@ When(/^User update value of header :$/, async function (this: World, table) {
     // Assign the populated map to `this.headers`
     this.headers = this.map.headers;
 
-    console.log('headers: ' + JSON.stringify(this.headers, null, 2));
+    // console.log('headers: ' + JSON.stringify(this.headers, null, 2));
 });
 
 When(/^User update value of param :$/, async function (this: World, table) {
@@ -65,7 +65,7 @@ When(/^User update value of param :$/, async function (this: World, table) {
     // Assign the populated map to `this.param`
     this.param = this.map.queryParam;
 
-    console.log('param: ' + JSON.stringify(this.param, null, 2));
+    // console.log('param: ' + JSON.stringify(this.param, null, 2));
 });
 
 When(/^User update value of body :$/, async function (this: World, table) {
@@ -88,7 +88,7 @@ When(/^User update value of body :$/, async function (this: World, table) {
     // Assign the populated map to `this.body`
     this.body = this.map.body;
 
-    console.log('body: ' + JSON.stringify(this.body, null, 2));
+    // console.log('body: ' + JSON.stringify(this.body, null, 2));
 });
 
 When(/^User update value of endpoint using (last|between|full|betweenLast) (.*)$/, async function (this: World, type: string, value: string) {
@@ -113,15 +113,15 @@ When(/^User update value of endpoint using (last|between|full|betweenLast) (.*)$
             throw new Error(`Invalid update value of endpoint type: ${type}`);
     }
 
-    console.log('param: ' + JSON.stringify(this.endpoint, null, 2));
+    // console.log('param: ' + JSON.stringify(this.endpoint, null, 2));
 });
 
 When(/^User send (.*) request$/, async function (this: World, method: string) {
     this.resp = await helperApi.requestSelection(method, this.service, this.endpoint, this.headers, this.body, this.param, this.form);
     this.responseBody = this.resp.data;
 
-    console.log('responseCode: ' + JSON.stringify(this.resp.status, null, 2));
-    console.log('responseBody: ' + JSON.stringify(this.responseBody, null, 2));
+    // console.log('responseCode: ' + JSON.stringify(this.resp.status, null, 2));
+    // console.log('responseBody: ' + JSON.stringify(this.responseBody, null, 2));
 });
 
 Then(/^User verify response (.*) code$/, async function (this: World, code: number) {

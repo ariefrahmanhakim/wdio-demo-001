@@ -1,5 +1,5 @@
 @root-tag-1-api
-Feature: The Internet Guinea Pig Website
+Feature: The Reqres api
 
   @WDIO-1 @api
   Scenario: WDIO-1>>As a user, I can GET list user
